@@ -7,6 +7,8 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
@@ -29,8 +31,10 @@ googleProvider.setCustomParameters({
 });
 
 export const auth = getAuth();
+
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
+
 export const signInWithGoogleRedirect = () =>
   signInWithRedirect(auth, googleProvider);
 
@@ -44,10 +48,8 @@ export const createUserDocFromAuth = async (
   if (!userAuth) return;
 
   const userDocRef = doc(db, "users", userAuth.uid);
-  console.log(userDocRef);
 
   const userSnapshop = await getDoc(userDocRef);
-  console.log(userSnapshop.exists());
 
   if (!userSnapshop.exists()) {
     const { displayName, email } = userAuth;
@@ -63,12 +65,7 @@ export const createUserDocFromAuth = async (
       console.log("error creating the user", error.message);
     }
   }
-  // if user data doesnt exist
-  // create / set the document with the data from userAuth in my collection
 
-  // if user data exists
-
-  // return userDocRef
   return userDocRef;
 };
 
@@ -82,3 +79,8 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
   return await signInWithEmailAndPassword(auth, email, password);
 };
+
+export const signOutUser = async () => await signOut(auth);
+
+export const onAuthStateChangedListener = (callback) =>
+  onAuthStateChanged(auth, callback);

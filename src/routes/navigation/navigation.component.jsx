@@ -1,10 +1,19 @@
-import { Fragment } from "react";
+// React
+import { Fragment, useContext } from "react";
 import { Outlet, Link } from "react-router-dom";
+// SVG
 import { ReactComponent as CrownLogo } from "../../assets/crown.svg";
 // CSS
 import "./navigation.styles.scss";
+// context
+import { UserContext } from "../../contexts/user.context";
+// signout firebase
+import { signOutUser } from "../../utils/firebase/firebase.utils";
 
 const Navigation = () => {
+  // user context
+  const { currentUser } = useContext(UserContext);
+
   return (
     <Fragment>
       <nav className="navigation">
@@ -15,9 +24,15 @@ const Navigation = () => {
           <Link className="nav-link" to="/">
             SHOP
           </Link>
-          <Link className="nav-link" to="/auth">
-            SIGN IN
-          </Link>
+          {currentUser ? (
+            <span className="nav-link" onClick={signOutUser}>
+              SIGN OUT
+            </span>
+          ) : (
+            <Link className="nav-link" to="/auth">
+              SIGN IN
+            </Link>
+          )}
         </div>
       </nav>
       <Outlet />
